@@ -3,22 +3,48 @@ import {ErrorLogger} from "./utils/ErrorLogger";
 import Discord from 'discord.js';
 import {TopSongResultDiscordMessageHandler} from "./discordMessageHandlers/TopSongResultDiscordMessageHandler";
 import {TopArtistResultDiscordMessageHandler} from "./discordMessageHandlers/TopArtistResultDiscordMessageHandler";
+import axios, {AxiosRequestConfig} from 'axios';
 
 const client = new Discord.Client();
+let spotifyToken;
 
-client.on('ready', () => {
+client.on('ready', async () => {
+    const {spotifyClientId, spotifyClientSecret} = auth;
     console.log(`Logged in as ${client.user.tag}!`);
+    const base64EncodedIdAndSecret = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`).toString('base64');
+    const config: AxiosRequestConfig = {
+        headers: {
+            Authorization: `Basic ${base64EncodedIdAndSecret}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+    try {
+        const response = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            'grant_type=client_credentials',
+            config
+        );
+
+        const {access_token, token_type} = response.data;
+
+        spotifyToken = `${token_type} ${access_token}`;
+        console.log(spotifyToken)
+    }catch(err){
+        console.log(err);
+    }
 });
 
 client.on('message', async message => {
-    try {
-        if (message.content.startsWith('!song-search')) {
-            new TopSongResultDiscordMessageHandler(message).handle();
-        } else if(message.content.startsWith('!artist-search')) {
-            new TopArtistResultDiscordMessageHandler(message).handle();
+    if(spotifyToken){
+        try {
+            if (message.content.startsWith('!song-search')) {
+                new TopSongResultDiscordMessageHandler(message, spotifyToken).handle();
+            } else if (message.content.startsWith('!artist-search')) {
+                new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
+            }
+        } catch (error) {
+            ErrorLogger.log(error);
         }
-    } catch (error) {
-        ErrorLogger.log(error);
     }
 });
 

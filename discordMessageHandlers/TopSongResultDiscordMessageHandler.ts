@@ -7,15 +7,18 @@ import {SearchResultsSpotifyDataSource} from "../data/SearchResultsSpotifyDataSo
 export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
     messageParser: DiscordMessageParser;
+    private spotifyToken: string;
 
-    constructor(message: Message) {
+    constructor(message: Message, spotifyToken: string) {
         this.message = message;
         this.messageParser = new PhraseAfterIdentifierMessageParser(message);
+        this.spotifyToken = spotifyToken;
     }
 
     handle: VoidFunction = async () => {
         const songNameToSearchFor = new PhraseAfterIdentifierMessageParser(this.message).parse();
-        const songUrl = await SearchResultsSpotifyDataSource.getTopSongResult(songNameToSearchFor);
+        const songUrl = await new SearchResultsSpotifyDataSource(this.spotifyToken)
+            .getTopSongResult(songNameToSearchFor);
         await this.message.channel.send(songUrl);
     };
 
