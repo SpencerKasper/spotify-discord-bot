@@ -20,7 +20,8 @@ export class SpotifyDataSource {
                 SpotifyDataSource.config
             );
 
-            return response.data.tracks.items[0].external_urls.spotify;
+            const firstTrack = response.data.tracks.items[0];
+            return firstTrack ? firstTrack.external_urls.spotify : '';
         } catch (error) {
             ErrorLogger.log(error);
         }
