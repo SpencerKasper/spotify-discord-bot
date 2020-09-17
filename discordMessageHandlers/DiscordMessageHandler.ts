@@ -1,5 +1,5 @@
 import {Message} from "discord.js";
-import {DiscordMessageParser} from "./DiscordMessageParser";
+import {DiscordMessageParser} from "../messageParsers/DiscordMessageParser";
 
 export interface DiscordMessageHandler {
     message: Message;

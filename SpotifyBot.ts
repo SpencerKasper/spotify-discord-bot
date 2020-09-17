@@ -1,8 +1,8 @@
 import {auth} from "./auth";
-import {ErrorLogger} from "./ErrorLogger";
+import {ErrorLogger} from "./utils/ErrorLogger";
 import Discord from 'discord.js';
-import {TopSongResultDiscordMessageHandler} from "./functions/TopSongResultDiscordMessageHandler";
-import {TopArtistResultDiscordMessageHandler} from "./functions/TopArtistResultDiscordMessageHandler";
+import {TopSongResultDiscordMessageHandler} from "./discordMessageHandlers/TopSongResultDiscordMessageHandler";
+import {TopArtistResultDiscordMessageHandler} from "./discordMessageHandlers/TopArtistResultDiscordMessageHandler";
 
 const client = new Discord.Client();
 

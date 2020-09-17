@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig} from 'axios';
-import {auth} from "./auth";
-import {ErrorLogger} from "./ErrorLogger";
+import {auth} from "../auth";
+import {ErrorLogger} from "../utils/ErrorLogger";
 
 
 export class SearchResultsSpotifyDataSource {

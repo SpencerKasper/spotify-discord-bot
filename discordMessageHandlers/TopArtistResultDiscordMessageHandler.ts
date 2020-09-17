@@ -1,8 +1,8 @@
 import {DiscordMessageHandler} from "./DiscordMessageHandler";
 import {Message} from "discord.js";
-import {DiscordMessageParser} from "./DiscordMessageParser";
-import {PhraseAfterIdentifierMessageParser} from "./PhraseAfterIdentifierMessageParser";
-import {SearchResultsSpotifyDataSource} from "../SearchResultsSpotifyDataSource";
+import {DiscordMessageParser} from "../messageParsers/DiscordMessageParser";
+import {PhraseAfterIdentifierMessageParser} from "../messageParsers/PhraseAfterIdentifierMessageParser";
+import {SearchResultsSpotifyDataSource} from "../data/SearchResultsSpotifyDataSource";
 
 export class TopArtistResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
