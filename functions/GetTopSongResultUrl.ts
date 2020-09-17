@@ -12,9 +12,10 @@ export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler
     handle: VoidFunction = async () => {
         const {content, channel} = this.message;
 
-        const songNameToSearchFor = content.split(' ')[1];
+        const allOfTheArgsSeparatedBySpace: string[] = content.split(' ');
+        allOfTheArgsSeparatedBySpace.shift();
+        const songNameToSearchFor = allOfTheArgsSeparatedBySpace.join(' ');
         const songUrl = await SpotifyDataSource.getFirstSearchResultSongUrl(songNameToSearchFor);
-        console.log(songUrl);
         await channel.send(songUrl);
     };
 
