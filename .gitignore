@@ -1,4 +1,5 @@
-logs/
+logs/*
+!logs/.keep
 node_modules/
 .env
 auth.ts
