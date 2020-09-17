@@ -1,7 +1,7 @@
 import {auth} from "./auth";
 import {ErrorLogger} from "./ErrorLogger";
 import Discord from 'discord.js';
-import {SpotifyDataSource} from "./SpotifyDataSource";
+import {TopSongResultDiscordMessageHandler} from "./functions/GetTopSongResultUrl";
 
 const client = new Discord.Client();
 
@@ -12,9 +12,7 @@ client.on('ready', () => {
 client.on('message', async message => {
     try {
         if (message.content.startsWith('!song-search')) {
-            const songNameToSearchFor = message.content.split(' ')[1];
-            const songUrl = await SpotifyDataSource.getFirstSearchResultSongUrl(songNameToSearchFor);
-            await message.channel.send(songUrl);
+            new TopSongResultDiscordMessageHandler(message).handle();
         }
     } catch (error) {
         ErrorLogger.log(error);

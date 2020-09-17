@@ -1,5 +1,7 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {auth} from "./auth";
+import {ErrorLogger} from "./ErrorLogger";
+
 
 export class SpotifyDataSource {
     private static domain: string = 'https://api.spotify.com/v1/';
@@ -10,11 +12,17 @@ export class SpotifyDataSource {
     };
 
     static getFirstSearchResultSongUrl = async (songNameToSearchFor) => {
-        const response = await axios.get(
-            `${SpotifyDataSource.domain}search?q=${songNameToSearchFor}&type=track`,
-            SpotifyDataSource.config
-        );
+        try {
+            const url = `${SpotifyDataSource.domain}search?q=${songNameToSearchFor}&type=track`;
 
-        return response.data.tracks.items[0].external_urls.spotify;
+            const response = await axios.get(
+                url,
+                SpotifyDataSource.config
+            );
+
+            return response.data.tracks.items[0].external_urls.spotify;
+        } catch (error) {
+            ErrorLogger.log(error);
+        }
     }
 }
