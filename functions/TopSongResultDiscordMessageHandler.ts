@@ -1,8 +1,8 @@
 import {Message} from "discord.js";
-import {SpotifyDataSource} from "../SpotifyDataSource";
 import {DiscordMessageHandler} from "./DiscordMessageHandler";
 import {DiscordMessageParser} from "./DiscordMessageParser";
-import {TopSongResultMessageParser} from "./TopSongResultMessageParser";
+import {PhraseAfterIdentifierMessageParser} from "./PhraseAfterIdentifierMessageParser";
+import {SearchResultsSpotifyDataSource} from "../SearchResultsSpotifyDataSource";
 
 export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
@@ -10,12 +10,12 @@ export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler
 
     constructor(message: Message) {
         this.message = message;
-        this.messageParser = new TopSongResultMessageParser(message);
+        this.messageParser = new PhraseAfterIdentifierMessageParser(message);
     }
 
     handle: VoidFunction = async () => {
-        const songNameToSearchFor = new TopSongResultMessageParser(this.message).parse();
-        const songUrl = await SpotifyDataSource.getFirstSearchResultSongUrl(songNameToSearchFor);
+        const songNameToSearchFor = new PhraseAfterIdentifierMessageParser(this.message).parse();
+        const songUrl = await SearchResultsSpotifyDataSource.getTopSongResult(songNameToSearchFor);
         await this.message.channel.send(songUrl);
     };
 
