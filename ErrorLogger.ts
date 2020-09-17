@@ -9,7 +9,7 @@ export class ErrorLogger {
                 message: err.message,
                 time: formattedDateTime
             },
-            `/../logs/error-${timestamp}`
+            `/logs/error-${timestamp}.json`
         )
     }
 }
