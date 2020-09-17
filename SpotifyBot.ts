@@ -3,43 +3,19 @@ import {ErrorLogger} from "./utils/ErrorLogger";
 import Discord from 'discord.js';
 import {TopSongResultDiscordMessageHandler} from "./discordMessageHandlers/TopSongResultDiscordMessageHandler";
 import {TopArtistResultDiscordMessageHandler} from "./discordMessageHandlers/TopArtistResultDiscordMessageHandler";
-import axios, {AxiosRequestConfig} from 'axios';
+import {SearchResultsSpotifyDataSource} from "./data/SearchResultsSpotifyDataSource";
 
 const client = new Discord.Client();
 let spotifyToken;
 
-async function requestBearerTokenFromSpotify() {
-    const {spotifyClientId, spotifyClientSecret} = auth;
-    const base64EncodedIdAndSecret = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`).toString('base64');
-    const config: AxiosRequestConfig = {
-        headers: {
-            Authorization: `Basic ${base64EncodedIdAndSecret}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    };
-    try {
-        const response = await axios.post(
-            'https://accounts.spotify.com/api/token',
-            'grant_type=client_credentials',
-            config
-        );
-
-        const {access_token, token_type} = response.data;
-
-        return `${token_type} ${access_token}`;
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    spotifyToken = await requestBearerTokenFromSpotify();
+    spotifyToken = await SearchResultsSpotifyDataSource.requestBearerTokenFromSpotify();
 });
 
 client.on('message', async message => {
-    if(!spotifyToken){
-        spotifyToken = await requestBearerTokenFromSpotify();
+    if (!spotifyToken) {
+        spotifyToken = await SearchResultsSpotifyDataSource.requestBearerTokenFromSpotify();
     }
 
     try {

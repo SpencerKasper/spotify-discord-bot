@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {ErrorLogger} from "../utils/ErrorLogger";
-
+import {auth} from "../auth";
 
 export class SearchResultsSpotifyDataSource {
     private spotifyToken: string;
@@ -46,5 +46,30 @@ export class SearchResultsSpotifyDataSource {
         } catch (error) {
             ErrorLogger.log(error);
         }
-    }
+    };
+
+    static requestBearerTokenFromSpotify = async () => {
+        const {spotifyClientId, spotifyClientSecret} = auth;
+        const base64EncodedIdAndSecret = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`)
+            .toString('base64');
+        const config: AxiosRequestConfig = {
+            headers: {
+                Authorization: `Basic ${base64EncodedIdAndSecret}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        };
+        try {
+            const response = await axios.post(
+                'https://accounts.spotify.com/api/token',
+                'grant_type=client_credentials',
+                config
+            );
+
+            const {access_token, token_type} = response.data;
+
+            return `${token_type} ${access_token}`;
+        } catch (err) {
+            console.log(err);
+        }
+    };
 }
