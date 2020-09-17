@@ -1,6 +1,6 @@
-import {FileReaderAndWriter} from "./FileSaveRequest";
 import {auth} from "./auth";
 import {DiscordUser} from "./DiscordUser";
+import {ErrorLogger} from "./ErrorLogger";
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -14,11 +14,8 @@ client.on('message', msg => {
     try {
         const username = DiscordUser.getUsername(msg, client);
         console.log(username);
-    } catch (err) {
-        const date = new Date();
-        const timestamp = date.getTime().toString();
-        const formattedDateTime = date.toISOString();
-        FileReaderAndWriter.writeFile({ message: err.message, time: formattedDateTime }, `/../logs/error-${timestamp}`)
+    } catch (error) {
+        ErrorLogger.log(error);
     }
 });
 
