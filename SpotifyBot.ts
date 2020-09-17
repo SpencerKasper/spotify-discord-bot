@@ -49,6 +49,7 @@ client.on('message', async message => {
             new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
         }
     } catch (error) {
+        spotifyToken = undefined;
         ErrorLogger.log(error);
     }
 });
