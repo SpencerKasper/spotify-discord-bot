@@ -8,9 +8,8 @@ import axios, {AxiosRequestConfig} from 'axios';
 const client = new Discord.Client();
 let spotifyToken;
 
-client.on('ready', async () => {
+async function requestBearerTokenFromSpotify() {
     const {spotifyClientId, spotifyClientSecret} = auth;
-    console.log(`Logged in as ${client.user.tag}!`);
     const base64EncodedIdAndSecret = Buffer.from(`${spotifyClientId}:${spotifyClientSecret}`).toString('base64');
     const config: AxiosRequestConfig = {
         headers: {
@@ -27,24 +26,30 @@ client.on('ready', async () => {
 
         const {access_token, token_type} = response.data;
 
-        spotifyToken = `${token_type} ${access_token}`;
-        console.log(spotifyToken)
-    }catch(err){
+        return `${token_type} ${access_token}`;
+    } catch (err) {
         console.log(err);
     }
+}
+
+client.on('ready', async () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+    spotifyToken = await requestBearerTokenFromSpotify();
 });
 
 client.on('message', async message => {
-    if(spotifyToken){
-        try {
-            if (message.content.startsWith('!song-search')) {
-                new TopSongResultDiscordMessageHandler(message, spotifyToken).handle();
-            } else if (message.content.startsWith('!artist-search')) {
-                new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
-            }
-        } catch (error) {
-            ErrorLogger.log(error);
+    if(!spotifyToken){
+        spotifyToken = await requestBearerTokenFromSpotify();
+    }
+
+    try {
+        if (message.content.startsWith('!song-search')) {
+            new TopSongResultDiscordMessageHandler(message, spotifyToken).handle();
+        } else if (message.content.startsWith('!artist-search')) {
+            new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
         }
+    } catch (error) {
+        ErrorLogger.log(error);
     }
 });
 
