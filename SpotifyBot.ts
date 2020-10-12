@@ -4,6 +4,7 @@ import Discord from 'discord.js';
 import {TopSongResultDiscordMessageHandler} from "./discordMessageHandlers/TopSongResultDiscordMessageHandler";
 import {TopArtistResultDiscordMessageHandler} from "./discordMessageHandlers/TopArtistResultDiscordMessageHandler";
 import {SearchResultsSpotifyDataSource} from "./data/SearchResultsSpotifyDataSource";
+import {SpotifyBotMessageHandlerDispatcher} from "./SpotifyBotMessageHandlerDispatcher";
 
 const client = new Discord.Client();
 
@@ -12,18 +13,15 @@ client.on('ready', async () => {
 
 });
 
-client.on('message', async message => {
-    const spotifyToken = await SearchResultsSpotifyDataSource.requestBearerTokenFromSpotify();
+const handleMessage = async message => {
     try {
-        if (message.content.startsWith('!song-search')) {
-            new TopSongResultDiscordMessageHandler(message, spotifyToken).handle();
-        } else if (message.content.startsWith('!artist-search')) {
-            new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
-        }
+        new SpotifyBotMessageHandlerDispatcher(message).dispatch();
     } catch (error) {
         ErrorLogger.log(error);
     }
-});
+};
+
+client.on('message', handleMessage);
 
 client.login(auth.discordToken).then(r => {
     console.log("Logged in");
