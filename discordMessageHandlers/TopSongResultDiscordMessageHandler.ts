@@ -16,13 +16,14 @@ export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler
     }
 
     handle: VoidFunction = async () => {
-        const songNameToSearchFor = this.messageParser
+        const {messageParser, message, spotifyToken} = this;
+        const songNameToSearchFor = messageParser
             .parse();
 
-        const songUrl = await new SearchResultsSpotifyDataSource(this.spotifyToken)
+        const songUrl = await new SearchResultsSpotifyDataSource(spotifyToken)
             .getTopSongResult(songNameToSearchFor);
 
-        await this.message.channel
+        await message.channel
             .send(songUrl);
     };
 
