@@ -1,6 +1,13 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {ErrorLogger} from "../utils/ErrorLogger";
 import {auth} from "../auth";
+import {TYPE_ARTIST, TYPE_TRACK} from "../static/SpotifySearchConstants";
+
+export type SpotifySearchType = 'track' | 'artist';
+type SpotifySearchParams = {
+    query: string;
+    type: SpotifySearchType;
+}
 
 export class SearchResultsSpotifyDataSource {
     private spotifyToken: string;
@@ -16,33 +23,20 @@ export class SearchResultsSpotifyDataSource {
         };
     }
 
-    getTopSongResult = async (songNameToSearchFor) => {
+    getTopResult = async (params: SpotifySearchParams) => {
+        const {query, type} = params;
         try {
-            const url = `${SearchResultsSpotifyDataSource.domain}search?q=${songNameToSearchFor}&type=track`;
+            const url = `${SearchResultsSpotifyDataSource.domain}search?q=${query}&type=${type}`;
 
             const response = await axios.get(
                 url,
                 this.config
             );
 
-            const firstTrack = response.data.tracks.items[0];
+            const responseDataKey = type === TYPE_TRACK ? TYPE_TRACK : TYPE_ARTIST;
+
+            const firstTrack = response.data[responseDataKey].items[0];
             return firstTrack ? firstTrack.external_urls.spotify : '';
-        } catch (error) {
-            ErrorLogger.log(error);
-        }
-    };
-
-    getTopArtistResult = async (artistToSearchFor,) => {
-        try {
-            const url = `${SearchResultsSpotifyDataSource.domain}search?q=${artistToSearchFor}&type=artist`;
-
-            const response = await axios.get(
-                url,
-                this.config
-            );
-
-            const firstArtist = response.data.artists.items[0];
-            return firstArtist ? firstArtist.external_urls.spotify : '';
         } catch (error) {
             ErrorLogger.log(error);
         }

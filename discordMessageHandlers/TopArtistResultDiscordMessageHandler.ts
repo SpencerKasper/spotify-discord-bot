@@ -3,6 +3,7 @@ import {Message} from "discord.js";
 import {DiscordMessageParser} from "../messageParsers/DiscordMessageParser";
 import {PhraseAfterIdentifierMessageParser} from "../messageParsers/PhraseAfterIdentifierMessageParser";
 import {SearchResultsSpotifyDataSource} from "../data/SearchResultsSpotifyDataSource";
+import {TYPE_ARTIST} from "../static/SpotifySearchConstants";
 
 export class TopArtistResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
@@ -16,13 +17,14 @@ export class TopArtistResultDiscordMessageHandler implements DiscordMessageHandl
     }
 
     handle: VoidFunction = async () => {
-        const artistNameToSearchFor = this.messageParser
+        const {messageParser, message, spotifyToken} = this;
+        const artistNameToSearchFor = messageParser
             .parse();
 
-        const songUrl = await new SearchResultsSpotifyDataSource(this.spotifyToken)
-            .getTopArtistResult(artistNameToSearchFor);
+        const songUrl = await new SearchResultsSpotifyDataSource(spotifyToken)
+            .getTopResult({query: artistNameToSearchFor, type: TYPE_ARTIST});
 
-        await this.message.channel.send(songUrl);
+        await message.channel.send(songUrl);
     };
 
 }

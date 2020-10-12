@@ -3,6 +3,7 @@ import {DiscordMessageHandler} from "./DiscordMessageHandler";
 import {DiscordMessageParser} from "../messageParsers/DiscordMessageParser";
 import {PhraseAfterIdentifierMessageParser} from "../messageParsers/PhraseAfterIdentifierMessageParser";
 import {SearchResultsSpotifyDataSource} from "../data/SearchResultsSpotifyDataSource";
+import {TYPE_TRACK} from "../static/SpotifySearchConstants";
 
 export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
@@ -21,7 +22,7 @@ export class TopSongResultDiscordMessageHandler implements DiscordMessageHandler
             .parse();
 
         const songUrl = await new SearchResultsSpotifyDataSource(spotifyToken)
-            .getTopSongResult(songNameToSearchFor);
+            .getTopResult({query: songNameToSearchFor, type: TYPE_TRACK});
 
         await message.channel
             .send(songUrl);
