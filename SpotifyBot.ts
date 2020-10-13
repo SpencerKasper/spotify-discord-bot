@@ -10,15 +10,13 @@ client.on('ready', async () => {
 
 });
 
-const handleMessage = async message => {
+client.on('message', async message => {
     try {
         new SpotifyBotMessageHandlerDispatcher(message).dispatch();
     } catch (error) {
         ErrorLogger.log(error);
     }
-};
-
-client.on('message', handleMessage);
+});
 
 client.login(auth.discordToken).then(r => {
     console.log("Logged in");
