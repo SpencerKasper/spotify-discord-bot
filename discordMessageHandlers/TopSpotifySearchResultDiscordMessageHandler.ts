@@ -7,26 +7,23 @@ import {SearchResultsSpotifyDataSource, SpotifySearchType} from "../data/SearchR
 export class TopSpotifySearchResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
     messageParser: DiscordMessageParser;
-    private spotifyToken: string;
     private searchType: SpotifySearchType;
 
     constructor(
         message: Message,
-        spotifyToken: string,
         searchType: SpotifySearchType
     ) {
         this.message = message;
         this.messageParser = new PhraseAfterIdentifierMessageParser(message);
-        this.spotifyToken = spotifyToken;
         this.searchType = searchType;
     }
 
     handle: VoidFunction = async () => {
-        const {messageParser, message, spotifyToken, searchType} = this;
+        const {messageParser, message, searchType} = this;
         const query = messageParser
             .parse();
 
-        const spotifyUrl = await new SearchResultsSpotifyDataSource(spotifyToken)
+        const spotifyUrl = await new SearchResultsSpotifyDataSource()
             .getTopResult({query, type: searchType});
 
         await message.channel

@@ -1,5 +1,4 @@
 import {TopSpotifySearchResultDiscordMessageHandler} from "./discordMessageHandlers/TopSpotifySearchResultDiscordMessageHandler";
-import {SearchResultsSpotifyDataSource} from "./data/SearchResultsSpotifyDataSource";
 import {Message} from "discord.js";
 import {SPOTIFY_SEARCH_TYPE_ARTIST, SPOTIFY_SEARCH_TYPE_TYPE_TRACK} from "./static/SpotifySearchConstants";
 import {COMMANDS} from "./static/SpotifyBotCommands";
@@ -15,7 +14,6 @@ export class SpotifyBotMessageHandlerDispatcher {
 
     async dispatch() {
         const {content} = this.message;
-        const spotifyToken = await SearchResultsSpotifyDataSource.requestBearerTokenFromSpotify();
 
         if (this.messageContainsACommand()) {
             // Only since there are only two commands. Once we have more I will change the pattern.
@@ -24,7 +22,6 @@ export class SpotifyBotMessageHandlerDispatcher {
                 SPOTIFY_SEARCH_TYPE_ARTIST;
             new TopSpotifySearchResultDiscordMessageHandler(
                 this.message,
-                spotifyToken,
                 searchType
             ).handle();
         }
