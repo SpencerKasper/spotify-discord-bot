@@ -1,24 +1,40 @@
-import {TopSongResultDiscordMessageHandler} from "./discordMessageHandlers/TopSongResultDiscordMessageHandler";
-import {TopArtistResultDiscordMessageHandler} from "./discordMessageHandlers/TopArtistResultDiscordMessageHandler";
+import {TopSpotifySearchResultDiscordMessageHandler} from "./discordMessageHandlers/TopSpotifySearchResultDiscordMessageHandler";
 import {SearchResultsSpotifyDataSource} from "./data/SearchResultsSpotifyDataSource";
 import {Message} from "discord.js";
+import {SPOTIFY_SEARCH_TYPE_ARTIST, SPOTIFY_SEARCH_TYPE_TYPE_TRACK} from "./static/SpotifySearchConstants";
+import {COMMANDS} from "./static/SpotifyBotCommands";
 
 export class SpotifyBotMessageHandlerDispatcher {
-    private message: Message;
+    private readonly message: Message;
+    private messageContent: string;
 
     constructor(message) {
         this.message = message;
+        this.messageContent = message.content;
     }
 
     async dispatch() {
-        const {message} = this;
-        const {content} = message;
+        const {content} = this.message;
         const spotifyToken = await SearchResultsSpotifyDataSource.requestBearerTokenFromSpotify();
 
-        if (content.startsWith('!song-search')) {
-            new TopSongResultDiscordMessageHandler(message, spotifyToken).handle();
-        } else if (content.startsWith('!artist-search')) {
-            new TopArtistResultDiscordMessageHandler(message, spotifyToken).handle();
+        if (this.messageContainsACommand()) {
+            // Only since there are only two commands. Once we have more I will change the pattern.
+            const searchType = content.startsWith('!song-search') ?
+                SPOTIFY_SEARCH_TYPE_TYPE_TRACK :
+                SPOTIFY_SEARCH_TYPE_ARTIST;
+            new TopSpotifySearchResultDiscordMessageHandler(
+                this.message,
+                spotifyToken,
+                searchType
+            ).handle();
         }
+    }
+
+    private messageContainsACommand() {
+        return this.getMatchingSpotifyBotCommands().length === 1;
+    }
+
+    private getMatchingSpotifyBotCommands() {
+        return COMMANDS.filter(command => this.messageContent.startsWith(command.command));
     }
 }

@@ -1,7 +1,7 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {ErrorLogger} from "../utils/ErrorLogger";
 import {auth} from "../auth";
-import {TYPE_ARTIST, TYPE_TRACK} from "../static/SpotifySearchConstants";
+import {SPOTIFY_SEARCH_TYPE_ARTIST, SPOTIFY_SEARCH_TYPE_TYPE_TRACK} from "../static/SpotifySearchConstants";
 
 export type SpotifySearchType = 'track' | 'artist';
 type SpotifySearchParams = {
@@ -33,7 +33,7 @@ export class SearchResultsSpotifyDataSource {
                 this.config
             );
 
-            const responseDataKey = type === TYPE_TRACK ? TYPE_TRACK : TYPE_ARTIST;
+            const responseDataKey = type === SPOTIFY_SEARCH_TYPE_TYPE_TRACK ? 'tracks' : 'artists';
 
             const firstTrack = response.data[responseDataKey].items[0];
             return firstTrack ? firstTrack.external_urls.spotify : '';
