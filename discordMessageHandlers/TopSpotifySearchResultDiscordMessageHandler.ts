@@ -3,6 +3,7 @@ import {DiscordMessageHandler} from "./DiscordMessageHandler";
 import {DiscordMessageParser} from "../messageParsers/DiscordMessageParser";
 import {PhraseAfterIdentifierMessageParser} from "../messageParsers/PhraseAfterIdentifierMessageParser";
 import {SearchResultsSpotifyDataSource, SpotifySearchType} from "../data/SearchResultsSpotifyDataSource";
+import {SPOTIFY_SEARCH_TYPE_ARTIST, SPOTIFY_SEARCH_TYPE_TYPE_TRACK} from "../static/SpotifySearchConstants";
 
 export class TopSpotifySearchResultDiscordMessageHandler implements DiscordMessageHandler {
     message: Message;
@@ -10,12 +11,13 @@ export class TopSpotifySearchResultDiscordMessageHandler implements DiscordMessa
     private searchType: SpotifySearchType;
 
     constructor(
-        message: Message,
-        searchType: SpotifySearchType
+        message: Message
     ) {
         this.message = message;
         this.messageParser = new PhraseAfterIdentifierMessageParser(message);
-        this.searchType = searchType;
+        this.searchType = message.content.startsWith('!song-search') ?
+            SPOTIFY_SEARCH_TYPE_TYPE_TRACK :
+            SPOTIFY_SEARCH_TYPE_ARTIST;
     }
 
     handle: VoidFunction = async () => {

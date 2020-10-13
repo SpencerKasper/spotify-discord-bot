@@ -13,16 +13,9 @@ export class SpotifyBotMessageHandlerDispatcher {
     }
 
     async dispatch() {
-        const {content} = this.message;
-
         if (this.messageContainsACommand()) {
-            // Only since there are only two commands. Once we have more I will change the pattern.
-            const searchType = content.startsWith('!song-search') ?
-                SPOTIFY_SEARCH_TYPE_TYPE_TRACK :
-                SPOTIFY_SEARCH_TYPE_ARTIST;
             new TopSpotifySearchResultDiscordMessageHandler(
-                this.message,
-                searchType
+                this.message
             ).handle();
         }
     }
